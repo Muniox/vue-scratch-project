@@ -1,25 +1,16 @@
 <script setup lang="ts">
-export interface TodoState {
-  todo: string
-  invalid: boolean
-  errMsg: string
-}
 
-const props = defineProps<{
-  todoState: TodoState
-}>()
-
-const emit = defineEmits<{
-  'create-todo': [todo: TodoState]
-}>()
-
-function createTodo() {
-  emit('create-todo', props.todoState)
-}
 </script>
 
 <template>
-  <button @click="createTodo()" :todoState="todoState">Create</button>
+  <button>
+    <slot></slot>
+  </button>
 </template>
 
-<style scoped lang="scss"></style>
+<style scoped lang="scss">
+button {
+  padding: 8px 16px;
+  border: none;
+}
+</style>

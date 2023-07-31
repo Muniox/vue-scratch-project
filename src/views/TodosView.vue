@@ -2,12 +2,13 @@
 import TodoCreator, { type TodoState } from '@/components/TodoCreator.vue'
 import { v4 as uuid } from 'uuid'
 import { ref, type Ref } from 'vue'
+import TodoItem from '@/components/TodoItem.vue'
 
-interface TodoCreate {
+export interface TodoCreate {
   id: string
   todo: string
-  isCompleted: boolean | null
-  isEditing: boolean | null
+  isCompleted: boolean
+  isEditing: boolean
 }
 
 const todoList: Ref<TodoCreate[]> = ref([])
@@ -19,8 +20,8 @@ function createTodo(payload: TodoState) {
     todoList.value.push({
       id: uuid(),
       todo: payload.todo,
-      isCompleted: null,
-      isEditing: null
+      isCompleted: false,
+      isEditing: false
     })
     payload.todo = ''
   } else {
@@ -34,6 +35,9 @@ function createTodo(payload: TodoState) {
   <main>
     <h2 class="title">Create Todo</h2>
     <TodoCreator @create-todo="(todo) => createTodo(todo)" />
+    <ul>
+      <TodoItem v-for="todo in todoList" :key="todo.id" :todo="todo" />
+    </ul>
   </main>
 </template>
 

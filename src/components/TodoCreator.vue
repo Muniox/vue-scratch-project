@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
+import TodoButton from "@/components/TodoButton.vue";
 
 export interface TodoState {
   todo: string
@@ -24,7 +25,11 @@ function createTodo() {
 <template>
   <div class="input-wrap" :class="{ 'input-err': todoState.invalid }">
     <input type="text" v-model="todoState.todo" />
-    <button @click="createTodo()">Create</button>
+    <TodoButton @click="createTodo()">
+      <template #default>
+        Create
+      </template>
+    </TodoButton>
   </div>
   <p class="err-msg" v-show="todoState.invalid">{{ todoState.errMsg }}</p>
 </template>
@@ -55,10 +60,7 @@ function createTodo() {
     }
   }
 
-  button {
-    padding: 8px 16px;
-    border: none;
-  }
+
 }
 
 .err-msg {
