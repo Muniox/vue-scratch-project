@@ -11,8 +11,18 @@ export interface TodoCreate {
   isCompleted: boolean
   isEditing: boolean
 }
-
 const todoList: Ref<TodoCreate[]> = ref([])
+
+function fetchTodoList() {
+  const savedTodoList = JSON.parse(localStorage.getItem('todoList'))
+  if (savedTodoList) {
+    todoList.value = savedTodoList
+  }
+}
+
+function setTodoListLocalStorage() {
+  localStorage.setItem('todoList', JSON.stringify(todoList.value))
+}
 
 function createTodo(payload: TodoState) {
   payload.invalid = false
@@ -29,18 +39,27 @@ function createTodo(payload: TodoState) {
     payload.invalid = true
     payload.errMsg = 'Todo value cannot be empty'
   }
+  setTodoListLocalStorage()
 }
 
 function toggleTodoComplete(todoPos: number) {
   todoList.value[todoPos].isCompleted = !todoList.value[todoPos].isCompleted
+  setTodoListLocalStorage()
 }
 
 function toggleTodo(todoPos: number) {
   todoList.value[todoPos].isEditing = !todoList.value[todoPos].isEditing
+  setTodoListLocalStorage()
 }
 
 function updateTodo(value: string, todoPos: number) {
   todoList.value[todoPos].todo = value
+  setTodoListLocalStorage()
+}
+
+function deleteTodo(id: string) {
+  todoList.value = todoList.value.filter((todo) => todo.id !== id)
+  setTodoListLocalStorage()
 }
 </script>
 
@@ -54,9 +73,10 @@ function updateTodo(value: string, todoPos: number) {
         :key="todo.id"
         :todo="todo"
         :index="index"
-        @toggle-complete="(index) => toggleTodoComplete(index)"
-        @edit-todo="(index) => toggleTodo(index)"
-        @update-todo="(value, index) => updateTodo(value, index)"
+        @toggle-complete="(indexValue) => toggleTodoComplete(indexValue)"
+        @edit-todo="(indexValue) => toggleTodo(indexValue)"
+        @update-todo="(value, indexValue) => updateTodo(value, indexValue)"
+        @delete-todo="(id) => deleteTodo(id)"
       />
     </ul>
     <p class="todos-msg" v-else>

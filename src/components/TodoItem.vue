@@ -11,6 +11,7 @@ defineEmits<{
   'toggle-complete': [index: number]
   'edit-todo': [index: number]
   'update-todo': [value: string, index: number]
+  'delete-todo': [id: string]
 }>()
 </script>
 
@@ -49,7 +50,13 @@ defineEmits<{
         class="icon"
         @click="$emit('edit-todo', index)"
       />
-      <Icon icon="ph:trash" color="#f95e5e" width="22" class="icon" />
+      <Icon
+        icon="ph:trash"
+        color="#f95e5e"
+        width="22"
+        class="icon"
+        @click="$emit('delete-todo', props.todo.id)"
+      />
     </div>
   </li>
 </template>
