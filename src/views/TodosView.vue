@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import TodoCreator, { type TodoState } from '@/components/TodoCreator.vue'
 import { v4 as uuid } from 'uuid'
-import { ref, type Ref } from 'vue'
+import { ref, watch, type Ref, computed } from 'vue'
 import TodoItem from '@/components/TodoItem.vue'
 import { Icon } from '@iconify/vue'
 
@@ -13,12 +13,22 @@ export interface TodoCreate {
 }
 const todoList: Ref<TodoCreate[]> = ref([])
 
+watch(todoList, () => setTodoListLocalStorage(), {
+  deep: true
+})
+
+const todoCompleted = computed(() => {
+  return todoList.value.every((todo) => todo.isCompleted === true)
+})
+
 function fetchTodoList() {
-  const savedTodoList = JSON.parse(localStorage.getItem('todoList'))
-  if (savedTodoList) {
+  const savedTodoList = JSON.parse(localStorage.getItem('todoList') || '[]')
+  if (savedTodoList.length > 0) {
     todoList.value = savedTodoList
   }
 }
+
+fetchTodoList()
 
 function setTodoListLocalStorage() {
   localStorage.setItem('todoList', JSON.stringify(todoList.value))
@@ -39,27 +49,27 @@ function createTodo(payload: TodoState) {
     payload.invalid = true
     payload.errMsg = 'Todo value cannot be empty'
   }
-  setTodoListLocalStorage()
+  // setTodoListLocalStorage()
 }
 
 function toggleTodoComplete(todoPos: number) {
   todoList.value[todoPos].isCompleted = !todoList.value[todoPos].isCompleted
-  setTodoListLocalStorage()
+  // setTodoListLocalStorage()
 }
 
 function toggleTodo(todoPos: number) {
   todoList.value[todoPos].isEditing = !todoList.value[todoPos].isEditing
-  setTodoListLocalStorage()
+  // setTodoListLocalStorage()
 }
 
 function updateTodo(value: string, todoPos: number) {
   todoList.value[todoPos].todo = value
-  setTodoListLocalStorage()
+  // setTodoListLocalStorage()
 }
 
 function deleteTodo(id: string) {
   todoList.value = todoList.value.filter((todo) => todo.id !== id)
-  setTodoListLocalStorage()
+  // setTodoListLocalStorage()
 }
 </script>
 
@@ -80,8 +90,12 @@ function deleteTodo(id: string) {
       />
     </ul>
     <p class="todos-msg" v-else>
-      <Icon icon="noto-v1:sad-but-relieved-face" color="#41b080" width="22" />
+      <Icon icon="noto-v1:sad-but-relieved-face" width="22" />
       <span>You have no todo's to complete! Add one!</span>
+    </p>
+    <p v-if="todoCompleted && todoList.length > 0" class="todos-msg">
+      <Icon icon="noto-v1:party-popper" width="22" />
+      <span>You have completed all your todos!</span>
     </p>
   </main>
 </template>
